@@ -8,12 +8,20 @@ public class Pizza extends Produto {
 	public TamanhoPizza tamanho;
 	public List<Ingrediente> ingredientes = new ArrayList<>();
 	
-	public void adicionarIngrediente(Ingrediente ingrediente) {
-		
+	public boolean adicionarIngrediente(Ingrediente ingrediente) {
+		boolean existente = ingredientes.contains(ingrediente);
+		if (!existente) {
+			ingredientes.add(ingrediente);
+		}
+		return !existente;
 	}
 	
-	public void removerIngrediente(Ingrediente ingrediente) {
-		
+	public boolean removerIngrediente(Ingrediente ingrediente) {
+		boolean existente = ingredientes.contains(ingrediente);
+		if (existente) {
+			ingredientes.remove(ingrediente);
+		}
+		return existente;
 	}
 	
 }

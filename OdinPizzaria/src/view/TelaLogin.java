@@ -1,5 +1,6 @@
 package view;
 
+import controller.UsuarioController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -11,9 +12,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import model.Usuario;
 
 public class TelaLogin extends Application implements EventHandler<ActionEvent>{
 
+	UsuarioController controller = new UsuarioController();
+	
 	private Label lblUsuario = new Label("Usuário: ");
 	private Label lblSenha = new Label("Senha: ");
 	private Label lblEsqueciASenha = new Label("Esqueci a senha");
@@ -47,6 +51,7 @@ public class TelaLogin extends Application implements EventHandler<ActionEvent>{
 		painel.getChildren().add(btnSair);
 		
 		btnSair.addEventFilter(ActionEvent.ACTION, this);
+		btnAcessar.addEventFilter(ActionEvent.ACTION, this);
 		
 		stage.setScene(scn);
 		stage.initStyle(StageStyle.UNDECORATED);
@@ -58,12 +63,24 @@ public class TelaLogin extends Application implements EventHandler<ActionEvent>{
 		if (event.getTarget() == btnSair) {
 			fechar();
 		}
+		if (event.getTarget() == btnAcessar) {
+			logar();
+		}
 	}
 
 	private void fechar() {
 		try {
 			Platform.exit();
 			System.exit(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void logar() {
+		try {
+			Usuario usuario = new Usuario(txtUsuario.getText(), txtSenha.getText());
+			controller.validarLogin(usuario);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

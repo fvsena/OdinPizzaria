@@ -47,26 +47,21 @@ public class TelaCliente extends Application implements EventHandler<ActionEvent
 		txtTelefone.relocate(100, 150);
 		lblCep.relocate(50, 200);
 		txtCep.relocate(100, 200);
-		
 		btnSair.relocate(100,250);
 		btnGravar.relocate(250,250);
-		
 		
 		painel.getChildren().add(lblNome);
 		painel.getChildren().add(lblCpf);
 		painel.getChildren().add(lblTelefone);
 		painel.getChildren().add(lblCep);
-		
 		painel.getChildren().add(txtNome);
 		painel.getChildren().add(txtCpf);
 		painel.getChildren().add(txtTelefone);
 		painel.getChildren().add(txtCep);
-		
 		painel.getChildren().add(btnSair);
 		painel.getChildren().add(btnGravar);
 		
-	stage.setTitle("CLIENTE");
-		
+		stage.setTitle("CLIENTE");
 		stage.setScene(scn);
 		stage.show();
 	}

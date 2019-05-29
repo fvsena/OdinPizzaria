@@ -24,13 +24,27 @@ public class TelaCliente extends Application implements EventHandler<ActionEvent
 	private Button btnSair = new Button("SAIR");
 	private Button btnGravar = new Button("GRAVAR");
 	
+	private void gravarCliente(){
+		String nome = txtNome.getText();
+		String cep = txtCep.getText();
+		String cpf = txtCpf.getText();
+		String telefone = txtTelefone.getText();
+		
+	}
 	
 	
 	@Override
 	public void handle(ActionEvent event) {
 		// TODO Auto-generated method stub
 		
-	}
+		if (event.getTarget()== btnGravar){
+			
+			
+		}
+		if (event.getTarget()==btnSair) {
+			
+		}
+		}
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -64,6 +78,12 @@ public class TelaCliente extends Application implements EventHandler<ActionEvent
 		stage.setTitle("CLIENTE");
 		stage.setScene(scn);
 		stage.show();
+		
+		
+		btnGravar.addEventFilter(ActionEvent.ACTION,this);
+		btnSair.addEventFilter(ActionEvent.ACTION,this);
+		
+		
 	}
 	
 	public static void main(String[] args) {

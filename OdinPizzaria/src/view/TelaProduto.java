@@ -1,10 +1,19 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import controller.ProdutoController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyFloatProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyLongWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,11 +22,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Ingrediente;
+import model.Pizza;
 import model.TamanhoPizza;
 
 public class TelaProduto extends Application implements EventHandler<ActionEvent>  {
@@ -31,16 +45,15 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	private Label lblTipo = new Label("TIPO");
 	private Label lblNome = new Label("NOME");
 	private Label lblValor = new Label("VALOR");
-	private Label lblIngredientes  = new Label("TIPO");
+	private Label lblIngredientes  = new Label("INGREDIENTES");
 	private Label lblTamanho  = new Label("TAMANHO");
 
-	private TextField txtTipo = new TextField();
 	private TextField txtNome = new TextField();
 	private TextField txtValor = new TextField();
 	private TextField txtIngredientes = new TextField();
 	private TextField txtBuscar = new TextField();
 	
-	private TableView<Ingrediente> tblIngredientes = new TableView<>();
+	private TableView<Pizza> tblPizzas = new TableView<>();
 	
 	ObservableList<String> tipoProduto = FXCollections.observableArrayList(
 				"PIZZA",
@@ -49,7 +62,7 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	
 	ObservableList<String> tamanhoPizza = FXCollections.observableArrayList(
 			"BROTO",
-			"MÉDIA",
+			"MEDIA",
 			"GRANDE"
 		);
 
@@ -62,10 +75,10 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 			habilitarControles(false);
 		}
 		if (event.getTarget() == btnBuscar) {
-			//logar();
+			buscarPizza();
 		}
 		if (event.getTarget() == btnGravar) {
-			//logar();
+			InserirPizza();
 		}
 		if (event.getTarget() == btnSair) {
 			fechar();
@@ -76,41 +89,32 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	@Override
 	public void start(Stage stage) throws Exception {
 		// TODO Auto-generated method stub
-		Pane painel = new Pane();
-		Scene scn = new Scene(painel, 800, 400);
+		VBox box = new VBox();
+		GridPane grid = new GridPane();
+		Scene scn = new Scene(box, 400, 300);
+		
+		box.getChildren().addAll(grid, tblPizzas);
+		tblPizzas.setStyle(STYLESHEET_MODENA);
 
+		popularTabelaPizza();
 
-		btnCadastrar.relocate(100, 50);
-		btnBuscar.relocate(220, 10);
-		lblTipo.relocate(50,100);
-		lblNome.relocate(50,150);
-		lblValor.relocate(50,200);
-		lblIngredientes.relocate(50,250);
-		lblTamanho.relocate(50, 300);
-		cmbTipoProduto.relocate(120,100);
-		txtNome.relocate(120,150);
-		txtValor.relocate(120,200);
-		txtIngredientes.relocate(120,250);
-		cmbTamanho.relocate(120, 300);
-		txtBuscar.relocate(50,10);
-		btnGravar.relocate(120, 350);
-		btnSair.relocate(200, 350);
-
-		painel.getChildren().add(btnCadastrar);
-		painel.getChildren().add(btnBuscar);
-		painel.getChildren().add(lblTipo);
-		painel.getChildren().add(lblNome);
-		painel.getChildren().add(lblValor);
-		painel.getChildren().add(lblIngredientes);
-		painel.getChildren().add(lblTamanho);
-		painel.getChildren().add(cmbTipoProduto);
-		painel.getChildren().add(cmbTamanho);
-		painel.getChildren().add(txtNome);
-		painel.getChildren().add(txtValor);
-		painel.getChildren().add(txtIngredientes);
-		painel.getChildren().add(txtBuscar);
-		painel.getChildren().add(btnGravar);
-		painel.getChildren().add(btnSair);
+		grid.add(txtBuscar, 0, 0);
+		grid.add(btnBuscar, 1, 0);
+		
+		grid.add(btnCadastrar, 0, 2);
+		
+		grid.add(lblTipo, 0, 3);
+		grid.add(cmbTipoProduto, 1, 3);
+		grid.add(lblNome, 0, 4);
+		grid.add(txtNome, 1, 4);
+		grid.add(lblIngredientes, 0, 5);
+		grid.add(txtIngredientes, 1, 5);
+		grid.add(lblTamanho, 0, 6);
+		grid.add(cmbTamanho, 1, 6);
+		grid.add(lblValor, 0, 7);
+		grid.add(txtValor, 1, 7);
+		grid.add(btnSair, 0, 9);
+		grid.add(btnGravar, 1, 9);
 		
 		btnCadastrar.addEventFilter(ActionEvent.ACTION, this);
 		btnBuscar.addEventFilter(ActionEvent.ACTION, this);
@@ -152,9 +156,16 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	
 	private void InserirPizza() {
 		if(validaCamposPreenchidos()) {
-			//controller.InserirPizza(txtNome.getText(), cmbTamanho.getValue().toString(), txtIngredientes.getText(), txtNome.getText(), Float.parseFloat(txtValor.getText()));
+			List<Ingrediente> ingredientes = new ArrayList();
+			TamanhoPizza tamanho = Enum.valueOf(TamanhoPizza.class, cmbTamanho.getValue().toString());
+			
+			controller.InserirPizza(txtNome.getText(), tamanho, ingredientes, txtNome.getText(), Float.parseFloat(txtValor.getText()));
 		}
-		//controller.InserirPizza(txtNome, tamanho, ingredientes, nome, valor);
+		//controller.InserirPizza(txtNome, tamanho., ingredientes, nome, valor);
+	}
+	
+	private void adicionarIngrediente() {
+		
 	}
 
 	private boolean validaCamposPreenchidos() {
@@ -166,5 +177,32 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 			valido = false;
 		}
 		return valido;
+	}
+	
+	private void buscarPizza() {
+		String busca = txtBuscar.getText();
+		controller.buscarPizza(busca);
+	}
+	
+	private void popularTabelaPizza() {
+		tblPizzas.setItems(controller.obterPizzas());
+		tblPizzas.getSelectionModel().selectedItemProperty().addListener(
+			new ChangeListener<Pizza>() {
+				public void changed(ObservableValue<? extends Pizza> p, Pizza p1, Pizza p2) {
+					if (p2 == null) {
+						//pizzatoboundary(p2)
+					}
+				}
+			});
+		TableColumn<Pizza, String> colunaSabor = new TableColumn<>();
+		colunaSabor.setCellValueFactory(item -> new ReadOnlyStringWrapper(item.getValue().sabor));
+		
+		TableColumn<Pizza, Double> colunaValor = new TableColumn<>();
+		colunaValor.setCellValueFactory(new PropertyValueFactory<Pizza, Double>("valor"));
+		
+		colunaSabor.setText("SABOR");
+		colunaValor.setText("VALOR");
+		
+		tblPizzas.getColumns().addAll(colunaSabor, colunaValor);
 	}
 }

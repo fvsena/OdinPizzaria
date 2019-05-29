@@ -11,4 +11,8 @@ public class ProdutoDAO {
 	public void adicionarPizza(Pizza p) {
 		this.pizzas.add(p);
 	}
+	
+	public List<Pizza> obterPizzas(){
+		return this.pizzas;
+	}
 }

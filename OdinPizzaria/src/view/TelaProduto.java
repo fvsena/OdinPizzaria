@@ -1,16 +1,15 @@
 package view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import controller.ProdutoController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.ReadOnlyLongWrapper;
+import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +26,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Ingrediente;
@@ -67,7 +65,7 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 		);
 
 	final ComboBox cmbTipoProduto = new ComboBox(tipoProduto);
-	final ComboBox cmbTamanho = new ComboBox(tamanhoPizza);
+	final ComboBox<String> cmbTamanho = new ComboBox<>(tamanhoPizza);
 
 	@Override
 	public void handle(ActionEvent event) {
@@ -88,7 +86,6 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		// TODO Auto-generated method stub
 		VBox box = new VBox();
 		GridPane grid = new GridPane();
 		Scene scn = new Scene(box, 400, 300);
@@ -156,7 +153,7 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	
 	private void InserirPizza() {
 		if(validaCamposPreenchidos()) {
-			List<Ingrediente> ingredientes = new ArrayList();
+			List<Ingrediente> ingredientes = new ArrayList<>();
 			TamanhoPizza tamanho = Enum.valueOf(TamanhoPizza.class, cmbTamanho.getValue().toString());
 			
 			controller.InserirPizza(txtNome.getText(), tamanho, ingredientes, txtNome.getText(), Float.parseFloat(txtValor.getText()));
@@ -197,8 +194,10 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 		TableColumn<Pizza, String> colunaSabor = new TableColumn<>();
 		colunaSabor.setCellValueFactory(item -> new ReadOnlyStringWrapper(item.getValue().sabor));
 		
-		TableColumn<Pizza, Double> colunaValor = new TableColumn<>();
-		colunaValor.setCellValueFactory(new PropertyValueFactory<Pizza, Double>("valor"));
+		TableColumn<Pizza, Double> colunaValor = new TableColumn<>("Preço");
+		colunaValor.setCellValueFactory(
+				new PropertyValueFactory<Pizza, Double>("valor"));
+		
 		
 		colunaSabor.setText("SABOR");
 		colunaValor.setText("VALOR");

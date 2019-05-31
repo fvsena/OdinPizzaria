@@ -13,13 +13,7 @@ public class ProdutoController {
 	private ProdutoDAO produtoDAO = new ProdutoDAO();
 	private ObservableList<Pizza> listaPizzas = FXCollections.observableArrayList();
 	
-	public void InserirPizza(String sabor, TamanhoPizza tamanho, List<Ingrediente> ingredientes, String nome, float valor) {
-		Pizza p = new Pizza();
-		p.sabor = sabor;
-		p.ingredientes = ingredientes;
-		p.nome = nome;
-		p.tamanho = tamanho;
-		p.valor = valor;
+	public void InserirPizza(Pizza p) {
 		produtoDAO.adicionarPizza(p);
 		listaPizzas.clear();
 		listaPizzas.addAll(produtoDAO.obterPizzas());

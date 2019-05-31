@@ -81,7 +81,6 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 		if (event.getTarget() == btnSair) {
 			fechar();
 		}
-
 	}
 
 	@Override
@@ -154,9 +153,18 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 	private void InserirPizza() {
 		if(validaCamposPreenchidos()) {
 			List<Ingrediente> ingredientes = new ArrayList<>();
-			TamanhoPizza tamanho = Enum.valueOf(TamanhoPizza.class, cmbTamanho.getValue().toString());
+			Pizza p = new Pizza();
+			p.nome = txtNome.getText();
+			p.ingredientes = ingredientes;
+			p.sabor = txtNome.getText();
+			p.valor = Double.parseDouble(txtValor.getText());
+			p.tamanho = TamanhoPizza.valueOf(cmbTamanho.getValue());
 			
-			controller.InserirPizza(txtNome.getText(), tamanho, ingredientes, txtNome.getText(), Float.parseFloat(txtValor.getText()));
+			controller.InserirPizza(p);
+			//popularTabelaPizza();
+		}
+		else {
+			
 		}
 		//controller.InserirPizza(txtNome, tamanho., ingredientes, nome, valor);
 	}
@@ -181,22 +189,30 @@ public class TelaProduto extends Application implements EventHandler<ActionEvent
 		controller.buscarPizza(busca);
 	}
 	
+	private void popularPizza(Pizza p) {
+		txtNome.setText(p.nome);
+		txtValor.setText(""+p.valor);
+		cmbTamanho.getSelectionModel().select(p.tamanho.toString());
+		cmbTipoProduto.getSelectionModel().select("PIZZA");
+	}
+	
 	private void popularTabelaPizza() {
 		tblPizzas.setItems(controller.obterPizzas());
 		tblPizzas.getSelectionModel().selectedItemProperty().addListener(
 			new ChangeListener<Pizza>() {
 				public void changed(ObservableValue<? extends Pizza> p, Pizza p1, Pizza p2) {
-					if (p2 == null) {
-						//pizzatoboundary(p2)
-					}
+					popularPizza(p2);
 				}
 			});
 		TableColumn<Pizza, String> colunaSabor = new TableColumn<>();
 		colunaSabor.setCellValueFactory(item -> new ReadOnlyStringWrapper(item.getValue().sabor));
 		
-		TableColumn<Pizza, Double> colunaValor = new TableColumn<>("Preço");
+		TableColumn<Pizza, String> colunaValor = new TableColumn<>();
+		colunaValor.setCellValueFactory(item -> new ReadOnlyStringWrapper(""+item.getValue().valor));
+		
+		/*TableColumn<Pizza, Double> colunaValor = new TableColumn<>("Preço");
 		colunaValor.setCellValueFactory(
-				new PropertyValueFactory<Pizza, Double>("valor"));
+				new PropertyValueFactory<Pizza, Double>("valor"));*/
 		
 		
 		colunaSabor.setText("SABOR");
